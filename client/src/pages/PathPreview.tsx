@@ -21,7 +21,7 @@ export default function PathPreview() {
       setPath(learningPath);
       setLoading(false);
     }
-  }, [params]);
+  }, [params?.id]);
 
   const getResourceIcon = (type: Resource["type"]) => {
     switch (type) {
@@ -88,11 +88,9 @@ export default function PathPreview() {
         <div className="flex-1 flex flex-col items-center justify-center p-6">
           <h1 className="text-2xl font-bold text-gray-900 mb-4">Learning Path Not Found</h1>
           <p className="text-gray-600 mb-6">The learning path you're looking for doesn't exist or has been removed.</p>
-          <Link href="/">
-            <a className="inline-flex items-center text-primary-600 hover:text-primary-700">
-              <ArrowLeft className="h-4 w-4 mr-2" />
-              Return to Home
-            </a>
+          <Link href="/" className="inline-flex items-center text-primary-600 hover:text-primary-700">
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            Return to Home
           </Link>
         </div>
         <Footer />
@@ -107,11 +105,9 @@ export default function PathPreview() {
       <main className="flex-1 py-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="mb-6">
-            <Link href="/">
-              <a className="inline-flex items-center text-gray-600 hover:text-gray-900">
+            <Link href="/" className="inline-flex items-center text-gray-600 hover:text-gray-900">
                 <ArrowLeft className="h-4 w-4 mr-2" />
                 Back to Learning Paths
-              </a>
             </Link>
           </div>
           

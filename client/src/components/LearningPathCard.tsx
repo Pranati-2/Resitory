@@ -64,10 +64,8 @@ export default function LearningPathCard({ path }: LearningPathCardProps) {
             </div>
             <span className="text-sm text-gray-500">{path.learners.toLocaleString()} learners</span>
           </div>
-          <Link href={`/path/${path.id}`}>
-            <a className="mt-3 w-full inline-flex justify-center items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-primary-600 bg-primary-50 hover:bg-primary-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition duration-150">
-              Preview Path
-            </a>
+          <Link href={`/path/${path.id}`} className="mt-3 w-full inline-flex justify-center items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-primary-600 bg-primary-50 hover:bg-primary-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition duration-150">
+            Preview Path
           </Link>
         </div>
       </div>
