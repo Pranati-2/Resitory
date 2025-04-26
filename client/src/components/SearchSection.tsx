@@ -1,5 +1,7 @@
-import { useState } from "react";
-import { Plus, Search } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Plus, Search, SlidersHorizontal, Book, Compass, User } from "lucide-react";
+import { Link } from "wouter";
+import { Button } from "@/components/ui/button";
 
 interface SearchSectionProps {
   onSearch: (query: string) => void;
@@ -12,6 +14,12 @@ export default function SearchSection({ onSearch, onCreatePath }: SearchSectionP
   const [customTabs, setCustomTabs] = useState<string[]>([]);
   const [showAddTabInput, setShowAddTabInput] = useState(false);
   const [newTabName, setNewTabName] = useState("");
+  const [searchMode, setSearchMode] = useState<'standard' | 'semantic'>('standard');
+  const [showFilters, setShowFilters] = useState(false);
+
+  // Additional filter states
+  const [difficulty, setDifficulty] = useState<string[]>([]);
+  const [rating, setRating] = useState<number | null>(null);
 
   const defaultTabs = [
     { id: "all", name: "All Paths" },
@@ -21,7 +29,10 @@ export default function SearchSection({ onSearch, onCreatePath }: SearchSectionP
     { id: "business", name: "Business" },
   ];
 
+  const difficultyOptions = ["beginner", "intermediate", "advanced"];
+
   const handleSearch = () => {
+    // Here we would add logic to determine if it's a semantic search or standard search
     onSearch(searchQuery);
   };
 
@@ -36,19 +47,56 @@ export default function SearchSection({ onSearch, onCreatePath }: SearchSectionP
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Enter") {
-      handleAddCustomTab();
+      if (showAddTabInput) {
+        handleAddCustomTab();
+      } else {
+        handleSearch();
+      }
     }
   };
+
+  const toggleDifficulty = (level: string) => {
+    if (difficulty.includes(level)) {
+      setDifficulty(difficulty.filter(d => d !== level));
+    } else {
+      setDifficulty([...difficulty, level]);
+    }
+  };
+  
+  // When filters change, update the search results
+  useEffect(() => {
+    if (activeTab !== 'all' || difficulty.length > 0 || rating !== null) {
+      // In a real implementation, this would trigger a search with these parameters
+      // For now, we're just using the simple search from the search box
+      handleSearch();
+    }
+  }, [activeTab, difficulty, rating]);
 
   return (
     <section className="bg-white pt-8 pb-6 shadow-inner">
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        {/* Navigation Tabs */}
+        <div className="flex justify-center mb-8 space-x-6">
+          <Link href="/" className="flex items-center text-gray-900 font-medium">
+            <Compass className="h-5 w-5 mr-1" />
+            Discover
+          </Link>
+          <Link href="/mypaths" className="flex items-center text-gray-500 hover:text-gray-900">
+            <Book className="h-5 w-5 mr-1" />
+            My Paths
+          </Link>
+          <Link href="/about" className="flex items-center text-gray-500 hover:text-gray-900">
+            <User className="h-5 w-5 mr-1" />
+            About
+          </Link>
+        </div>
+        
         <h1 className="text-3xl font-bold text-gray-900 sm:text-4xl">Find your perfect learning path</h1>
         <p className="mt-3 max-w-md mx-auto text-base text-gray-600 sm:text-lg md:mt-4">
           Discover curated learning paths using free resources from across the web
         </p>
         
-        {/* Search Bar */}
+        {/* Search Bar with Semantic Switch */}
         <div className="mt-6 relative">
           <div className="flex items-center rounded-full shadow-sm border border-gray-300 bg-white overflow-hidden">
             <div className="pl-4 pr-2">
@@ -60,14 +108,39 @@ export default function SearchSection({ onSearch, onCreatePath }: SearchSectionP
               placeholder="Search for learning paths, topics, or skills..." 
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+              onKeyDown={handleKeyDown}
             />
-            <button 
-              className="bg-primary-500 text-white px-5 py-3 font-medium hover:bg-primary-600 transition duration-150 flex items-center"
-              onClick={handleSearch}
-            >
-              Search
-            </button>
+            <div className="flex items-center">
+              <div className="border-l border-gray-300 h-6 mx-2"></div>
+              <div className="flex items-center mr-2">
+                <button 
+                  className={`px-3 py-1 text-xs font-medium rounded-full mr-1 ${
+                    searchMode === 'standard' 
+                      ? 'bg-primary-100 text-primary-700' 
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  }`}
+                  onClick={() => setSearchMode('standard')}
+                >
+                  Standard
+                </button>
+                <button 
+                  className={`px-3 py-1 text-xs font-medium rounded-full ${
+                    searchMode === 'semantic' 
+                      ? 'bg-primary-100 text-primary-700' 
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  }`}
+                  onClick={() => setSearchMode('semantic')}
+                >
+                  Semantic
+                </button>
+              </div>
+              <button 
+                className="bg-primary-500 text-white px-5 py-3 font-medium hover:bg-primary-600 transition duration-150 flex items-center"
+                onClick={handleSearch}
+              >
+                Search
+              </button>
+            </div>
           </div>
           
           {/* Create Learning Path Button */}
@@ -81,6 +154,63 @@ export default function SearchSection({ onSearch, onCreatePath }: SearchSectionP
             </button>
           </div>
         </div>
+        
+        {/* Advanced Filters Button */}
+        <div className="mt-4 flex justify-center">
+          <Button 
+            variant="outline" 
+            size="sm" 
+            className="text-xs"
+            onClick={() => setShowFilters(!showFilters)}
+          >
+            <SlidersHorizontal className="h-4 w-4 mr-1" />
+            Advanced Filters
+          </Button>
+        </div>
+        
+        {/* Advanced Filters Panel */}
+        {showFilters && (
+          <div className="mt-4 p-4 bg-gray-50 rounded-lg border border-gray-200">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-left">
+              <div>
+                <h3 className="text-sm font-medium text-gray-700 mb-2">Difficulty</h3>
+                <div className="flex flex-wrap gap-2">
+                  {difficultyOptions.map(level => (
+                    <button
+                      key={level}
+                      className={`px-3 py-1 text-xs font-medium rounded-full ${
+                        difficulty.includes(level)
+                          ? 'bg-primary-100 text-primary-700'
+                          : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                      }`}
+                      onClick={() => toggleDifficulty(level)}
+                    >
+                      {level.charAt(0).toUpperCase() + level.slice(1)}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <div>
+                <h3 className="text-sm font-medium text-gray-700 mb-2">Minimum Rating</h3>
+                <div className="flex items-center gap-2">
+                  {[4, 4.5, 5].map(r => (
+                    <button
+                      key={r}
+                      className={`px-3 py-1 text-xs font-medium rounded-full ${
+                        rating === r
+                          ? 'bg-primary-100 text-primary-700'
+                          : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                      }`}
+                      onClick={() => setRating(rating === r ? null : r)}
+                    >
+                      {r}+ ★
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
         
         {/* Search Tabs */}
         <div className="mt-6 border-b border-gray-200">

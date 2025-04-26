@@ -19,7 +19,7 @@ export default function ResourceItem({ resource, onChange, onRemove, isRemovable
     setThumbnailUrl(null);
     
     // Check if URL is valid
-    const isValid = resource.url && resource.url.startsWith('http');
+    const isValid = Boolean(resource.url && resource.url.startsWith('http'));
     setIsUrlValid(isValid);
 
     // Generate thumbnail for YouTube videos

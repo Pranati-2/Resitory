@@ -167,26 +167,67 @@ export default function PathPreview() {
                     {path.resources.map((resource, index) => (
                       <Card key={resource.id}>
                         <CardContent className="p-4">
-                          <div className="flex items-start">
-                            {getResourceIcon(resource.type)}
-                            <div className="ml-4 flex-1">
-                              <div className="flex items-center justify-between">
-                                <h3 className="text-base font-medium text-gray-900">{resource.title || `Resource ${index + 1}`}</h3>
-                                <span className="text-xs font-medium text-gray-500 capitalize">{resource.type}</span>
+                          <div className="flex flex-col space-y-4">
+                            {/* Show YouTube video thumbnails */}
+                            {resource.type === 'video' && resource.url && resource.url.includes('youtube') && (
+                              <div className="w-full relative rounded-md overflow-hidden">
+                                <div className="pb-[56.25%]">
+                                  {(() => {
+                                    const videoId = resource.url.match(/(?:youtube\.com\/(?:[^\/\n\s]+\/\s*[^\/\n\s]+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
+                                    return videoId && (
+                                      <img 
+                                        src={`https://img.youtube.com/vi/${videoId[1]}/mqdefault.jpg`}
+                                        alt={resource.title || "Video thumbnail"}
+                                        className="absolute inset-0 w-full h-full object-cover"
+                                      />
+                                    );
+                                  })()}
+                                  <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-20">
+                                    <div className="w-12 h-12 rounded-full bg-white bg-opacity-80 flex items-center justify-center">
+                                      <svg className="w-6 h-6 text-red-600" fill="currentColor" viewBox="0 0 24 24">
+                                        <path d="M8 5v14l11-7z" />
+                                      </svg>
+                                    </div>
+                                  </div>
+                                </div>
                               </div>
-                              {resource.description && (
-                                <p className="mt-1 text-sm text-gray-600">{resource.description}</p>
-                              )}
-                              <div className="mt-2">
-                                <a
-                                  href={resource.url}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="inline-flex items-center text-sm text-primary-600 hover:text-primary-700"
-                                >
-                                  Open Resource
-                                  <ExternalLink className="h-4 w-4 ml-1" />
-                                </a>
+                            )}
+                            
+                            {/* Image resource preview */}
+                            {resource.type === 'image' && resource.url && (
+                              <div className="w-full rounded-md overflow-hidden max-h-48">
+                                <img 
+                                  src={resource.url}
+                                  alt={resource.title || "Image resource"}
+                                  className="w-full object-cover"
+                                  onError={(e) => {
+                                    (e.target as HTMLImageElement).style.display = 'none';
+                                  }}
+                                />
+                              </div>
+                            )}
+                            
+                            <div className="flex items-start">
+                              {getResourceIcon(resource.type)}
+                              <div className="ml-4 flex-1">
+                                <div className="flex items-center justify-between">
+                                  <h3 className="text-base font-medium text-gray-900">{resource.title || `Resource ${index + 1}`}</h3>
+                                  <span className="text-xs font-medium text-gray-500 capitalize">{resource.type}</span>
+                                </div>
+                                {resource.description && (
+                                  <p className="mt-1 text-sm text-gray-600">{resource.description}</p>
+                                )}
+                                <div className="mt-2">
+                                  <a
+                                    href={resource.url}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="inline-flex items-center text-sm text-primary-600 hover:text-primary-700"
+                                  >
+                                    Open Resource
+                                    <ExternalLink className="h-4 w-4 ml-1" />
+                                  </a>
+                                </div>
                               </div>
                             </div>
                           </div>
