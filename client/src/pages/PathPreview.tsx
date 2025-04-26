@@ -262,9 +262,47 @@ export default function PathPreview() {
                   </div>
                 </div>
                 
-                <Button className="w-full mb-3">Start Learning</Button>
+                <Button 
+                  className="w-full mb-3"
+                  onClick={() => {
+                    // In a real app, this would mark the path as "started" for the user
+                    // and perhaps take them to the first resource
+                    if (path.resources.length > 0) {
+                      window.open(path.resources[0].url, '_blank');
+                    }
+                  }}
+                >
+                  Start Learning
+                </Button>
                 
-                <Button variant="outline" className="w-full flex items-center justify-center mb-4">
+                <Button 
+                  variant="outline" 
+                  className="w-full flex items-center justify-center mb-4"
+                  onClick={() => {
+                    // Create a shareable URL
+                    const shareUrl = window.location.href;
+                    
+                    // Try to use the Web Share API if available
+                    if (navigator.share) {
+                      navigator.share({
+                        title: path.title,
+                        text: `Check out this learning path: ${path.title}`,
+                        url: shareUrl,
+                      }).catch(err => {
+                        console.error('Error sharing:', err);
+                        // Fallback to clipboard
+                        navigator.clipboard.writeText(shareUrl)
+                          .then(() => alert('Link copied to clipboard!'))
+                          .catch(e => console.error('Could not copy link:', e));
+                      });
+                    } else {
+                      // Fallback for browsers without Web Share API
+                      navigator.clipboard.writeText(shareUrl)
+                        .then(() => alert('Link copied to clipboard!'))
+                        .catch(e => console.error('Could not copy link:', e));
+                    }
+                  }}
+                >
                   <Share2 className="h-4 w-4 mr-2" />
                   Share Path
                 </Button>

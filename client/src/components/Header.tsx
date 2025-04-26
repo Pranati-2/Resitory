@@ -7,13 +7,11 @@ export default function Header() {
         <div className="flex justify-between items-center py-4">
           <div className="flex items-center">
             {/* Logo */}
-            <Link href="/">
-              <a className="flex items-center">
-                <div className="h-8 w-8 bg-primary-500 rounded-full flex items-center justify-center">
-                  <span className="text-white font-bold text-lg">R</span>
-                </div>
-                <span className="ml-2 text-xl font-medium text-gray-900">Repository</span>
-              </a>
+            <Link href="/" className="flex items-center">
+              <div className="h-8 w-8 bg-primary-500 rounded-full flex items-center justify-center">
+                <span className="text-white font-bold text-lg">R</span>
+              </div>
+              <span className="ml-2 text-xl font-medium text-gray-900">Repository</span>
             </Link>
           </div>
           
@@ -28,25 +26,17 @@ export default function Header() {
           
           {/* Desktop Navigation */}
           <nav className="hidden md:flex space-x-10">
-            <Link href="/">
-              <a className="text-sm font-medium text-primary-500 hover:text-primary-700">
-                Home
-              </a>
+            <Link href="/" className="text-sm font-medium text-primary-500 hover:text-primary-700">
+              Home
             </Link>
-            <Link href="/discover">
-              <a className="text-sm font-medium text-gray-600 hover:text-gray-900">
-                Discover
-              </a>
+            <Link href="/" className="text-sm font-medium text-gray-600 hover:text-gray-900">
+              Discover
             </Link>
-            <Link href="/my-paths">
-              <a className="text-sm font-medium text-gray-600 hover:text-gray-900">
-                My Paths
-              </a>
+            <Link href="/mypaths" className="text-sm font-medium text-gray-600 hover:text-gray-900">
+              My Paths
             </Link>
-            <Link href="/about">
-              <a className="text-sm font-medium text-gray-600 hover:text-gray-900">
-                About
-              </a>
+            <Link href="/about" className="text-sm font-medium text-gray-600 hover:text-gray-900">
+              About
             </Link>
           </nav>
           
