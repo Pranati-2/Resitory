@@ -6,16 +6,26 @@ import { Button } from "@/components/ui/button";
 interface SearchSectionProps {
   onSearch: (query: string) => void;
   onCreatePath: () => void;
+  searchMode?: 'standard' | 'semantic';
+  onSearchModeChange?: (mode: 'standard' | 'semantic') => void;
 }
 
-export default function SearchSection({ onSearch, onCreatePath }: SearchSectionProps) {
+export default function SearchSection({ 
+  onSearch, 
+  onCreatePath, 
+  searchMode: externalSearchMode, 
+  onSearchModeChange 
+}: SearchSectionProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [activeTab, setActiveTab] = useState("all");
   const [customTabs, setCustomTabs] = useState<string[]>([]);
   const [showAddTabInput, setShowAddTabInput] = useState(false);
   const [newTabName, setNewTabName] = useState("");
-  const [searchMode, setSearchMode] = useState<'standard' | 'semantic'>('standard');
+  const [internalSearchMode, setInternalSearchMode] = useState<'standard' | 'semantic'>(externalSearchMode || 'standard');
   const [showFilters, setShowFilters] = useState(false);
+  
+  // Use the external searchMode if provided, otherwise use internal state
+  const searchMode = externalSearchMode || internalSearchMode;
 
   // Additional filter states
   const [difficulty, setDifficulty] = useState<string[]>([]);
@@ -32,8 +42,12 @@ export default function SearchSection({ onSearch, onCreatePath }: SearchSectionP
   const difficultyOptions = ["beginner", "intermediate", "advanced"];
 
   const handleSearch = () => {
-    // Here we would add logic to determine if it's a semantic search or standard search
-    onSearch(searchQuery);
+    // Pass the search query to the parent component
+    if (searchQuery.trim()) {
+      // Here we could include the search mode in the parent search handler
+      // For now we're just passing the query
+      onSearch(searchQuery);
+    }
   };
 
   const handleAddCustomTab = () => {
@@ -119,7 +133,12 @@ export default function SearchSection({ onSearch, onCreatePath }: SearchSectionP
                       ? 'bg-primary-100 text-primary-700' 
                       : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                   }`}
-                  onClick={() => setSearchMode('standard')}
+                  onClick={() => {
+                    setInternalSearchMode('standard');
+                    if (onSearchModeChange) {
+                      onSearchModeChange('standard');
+                    }
+                  }}
                 >
                   Standard
                 </button>
@@ -129,7 +148,12 @@ export default function SearchSection({ onSearch, onCreatePath }: SearchSectionP
                       ? 'bg-primary-100 text-primary-700' 
                       : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                   }`}
-                  onClick={() => setSearchMode('semantic')}
+                  onClick={() => {
+                    setInternalSearchMode('semantic');
+                    if (onSearchModeChange) {
+                      onSearchModeChange('semantic');
+                    }
+                  }}
                 >
                   Semantic
                 </button>

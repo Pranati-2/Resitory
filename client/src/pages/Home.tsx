@@ -7,12 +7,14 @@ import CreatePathModal from "@/components/CreatePathModal";
 import { LearningPath } from "@/lib/types";
 import { searchLearningPaths } from "@/lib/search";
 import { getLearningPaths } from "@/lib/storage";
+import { toast } from "@/hooks/use-toast";
 
 export default function Home() {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [learningPaths, setLearningPaths] = useState<LearningPath[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(true);
+  const [searchMode, setSearchMode] = useState<'standard' | 'semantic'>('standard');
 
   useEffect(() => {
     // Fetch learning paths on component mount
@@ -20,11 +22,55 @@ export default function Home() {
     setLearningPaths(paths);
     setLoading(false);
   }, []);
-
-  const handleSearch = (query: string) => {
-    setSearchQuery(query);
+  
+  const performSemanticSearch = async (query: string) => {
+    // In a real implementation, this would call an API with the Perplexity API
+    // For now, we'll just use the standard search and show a toast message
+    toast({
+      title: "Semantic Search",
+      description: "Searching for concepts related to: " + query,
+    });
+    
+    // Simulating API call delay
+    setLoading(true);
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    
+    // For this prototype, we'll use the standard search as a fallback
     const results = searchLearningPaths(query);
-    setLearningPaths(results);
+    setLoading(false);
+    return results;
+  };
+
+  const handleSearch = async (query: string) => {
+    setSearchQuery(query);
+    
+    if (query.trim() === "") {
+      const paths = getLearningPaths();
+      setLearningPaths(paths);
+      return;
+    }
+    
+    if (searchMode === 'semantic') {
+      try {
+        const results = await performSemanticSearch(query);
+        setLearningPaths(results);
+      } catch (error) {
+        console.error("Semantic search error:", error);
+        toast({
+          title: "Search Error",
+          description: "Semantic search is unavailable. Falling back to standard search.",
+          variant: "destructive",
+        });
+        
+        // Fallback to standard search
+        const results = searchLearningPaths(query);
+        setLearningPaths(results);
+      }
+    } else {
+      // Standard search
+      const results = searchLearningPaths(query);
+      setLearningPaths(results);
+    }
   };
 
   const handlePathCreated = (newPath: LearningPath) => {
@@ -36,7 +82,9 @@ export default function Home() {
       <Header />
       <SearchSection 
         onSearch={handleSearch} 
-        onCreatePath={() => setIsCreateModalOpen(true)} 
+        onCreatePath={() => setIsCreateModalOpen(true)}
+        searchMode={searchMode}
+        onSearchModeChange={(mode) => setSearchMode(mode)}
       />
       
       {loading ? (
