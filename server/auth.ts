@@ -2,6 +2,9 @@ import passport from 'passport';
 import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
 import { storage } from './storage'; // Your user storage instance
 import { User } from '@shared/schema'; // Assuming User type is needed
+import 'dotenv/config';
+// or if using CommonJS:
+// require('dotenv').config();
 
 passport.use(new GoogleStrategy({
   clientID: process.env.GOOGLE_CLIENT_ID!,
@@ -9,7 +12,7 @@ passport.use(new GoogleStrategy({
   callbackURL: process.env.GOOGLE_CALLBACK_URL || '/auth/google/callback', // Default if not in env
   scope: ['profile', 'email'] // Request access to profile and email
 },
-async (accessToken, refreshToken, profile, done) => {
+async (accessToken: any, refreshToken: any, profile: { emails: string | any[]; id: any; displayName: any; photos: string | any[]; }, done: (arg0: unknown, arg1: { email: string; id: number; googleId: string | null; displayName: string; avatarUrl: string | null; createdAt: Date; } | undefined) => any) => {
   try {
     // console.log('Google Profile:', JSON.stringify(profile, null, 2)); // Useful for debugging
     const email = profile.emails && profile.emails.length > 0 ? profile.emails[0].value : undefined;
