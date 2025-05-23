@@ -1,4 +1,4 @@
-export type ResourceType = 'video' | 'article' | 'pdf' | 'image' | 'other';
+export type ResourceType = 'video' | 'website' | 'pdf' | 'image' | 'learningPath' | 'other';
 
 export interface Resource {
   id: string;

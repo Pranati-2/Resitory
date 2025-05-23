@@ -15,7 +15,7 @@ export default function CreatePathModal({ isOpen, onClose, onPathCreated }: Crea
   const [resources, setResources] = useState<Resource[]>([
     {
       id: "1",
-      type: "video",
+      type: "website",
       title: "",
       url: "",
       description: "",
@@ -45,7 +45,7 @@ export default function CreatePathModal({ isOpen, onClose, onPathCreated }: Crea
       setResources([
         {
           id: "1",
-          type: "video",
+          type: "website",
           title: "",
           url: "",
           description: "",
@@ -76,7 +76,7 @@ export default function CreatePathModal({ isOpen, onClose, onPathCreated }: Crea
       ...resources,
       {
         id: String(Date.now()),
-        type: "video" as ResourceType,
+        type: "website" as ResourceType,
         title: "",
         url: "",
         description: "",
@@ -245,6 +245,9 @@ export default function CreatePathModal({ isOpen, onClose, onPathCreated }: Crea
                       className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 sm:text-sm" 
                       placeholder="https://example.com/image.jpg"
                     />
+                    <p className="mt-1 text-xs text-gray-500">
+                      Need to create an image? Try <a href="https://www.canva.com" target="_blank" rel="noopener noreferrer" className="text-primary-500 hover:underline">Canva</a>.
+                    </p>
                   </div>
                 </div>
                 
