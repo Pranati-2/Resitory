@@ -47,9 +47,10 @@ export default function ResourceItem({ resource, onChange, onRemove, isRemovable
                 onChange={(e) => onChange({ type: e.target.value as Resource["type"] })}
               >
                 <option value="video">Video (YouTube, Vimeo, etc.)</option>
-                <option value="article">Article/Website</option>
+                <option value="website">Website</option>
                 <option value="pdf">PDF</option>
                 <option value="image">Image</option>
+                <option value="learningPath">Other Learning Path</option>
                 <option value="other">Other</option>
               </select>
             </div>

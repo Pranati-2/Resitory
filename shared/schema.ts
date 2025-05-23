@@ -5,7 +5,7 @@ import { z } from "zod";
 // Define Resource schema
 export const resourceSchema = z.object({
   id: z.string(),
-  type: z.enum(['video', 'article', 'pdf', 'image', 'other']),
+  type: z.enum(['video', 'website', 'pdf', 'image', 'learningPath', 'other']),
   title: z.string(),
   url: z.string().url(),
   description: z.string()
