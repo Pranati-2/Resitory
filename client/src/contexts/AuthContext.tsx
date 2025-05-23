@@ -46,20 +46,24 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   useEffect(() => {
     const checkUserStatus = async () => {
       setIsLoading(true);
+      console.log('[AuthContext] Checking user status...'); // New log
       try {
         const response = await fetch('/api/auth/me');
+        console.log('[AuthContext] /api/auth/me response status:', response.status); // New log
         if (response.ok) {
           const userData = await response.json();
+          console.log('[AuthContext] /api/auth/me response data (userData):', userData); // New log
           setUser(userData);
         } else {
-          // If response is not OK (e.g., 401), it means user is not authenticated
+          console.log('[AuthContext] /api/auth/me response not OK, setting user to null.'); // New log
           setUser(null);
         }
       } catch (error) {
-        console.error('Failed to fetch user status:', error);
+        console.error('[AuthContext] Failed to fetch user status:', error); // Modified log
         setUser(null);
       } finally {
         setIsLoading(false);
+        console.log('[AuthContext] Finished checking user status, isLoading:', false); // New log
       }
     };
     checkUserStatus();
