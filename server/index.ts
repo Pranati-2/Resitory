@@ -1,7 +1,8 @@
 import express, { type Request, Response, NextFunction } from "express";
-import session from 'express-session'; // Added
-import passport from 'passport'; // Added
-import './auth'; // Import Passport configuration (should be already there)
+import session from 'express-session';
+import passport from 'passport';
+import cors from 'cors'; // Step 2.1: Import cors
+import './auth'; // Import Passport configuration
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
 
@@ -9,9 +10,9 @@ const app = express();
 
 // 1. Body parsers (already present)
 app.use(express.json());
-app.use(express.urlencoded({ extended: false })); // false is common, true allows richer objects
+app.use(express.urlencoded({ extended: false }));
 
-// Custom logging middleware (already present)
+// 2. Custom logging middleware (already present)
 app.use((req, res, next) => {
   const start = Date.now();
   const path = req.path;
@@ -39,48 +40,69 @@ app.use((req, res, next) => {
   next();
 });
 
-// 2. Session middleware setup
+// Step 2.2: Define CORS Options & Step 2.3: Use CORS Middleware
+const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
+const corsOptions = {
+  origin: frontendUrl,
+  credentials: true,
+  optionsSuccessStatus: 200
+};
+app.use(cors(corsOptions)); // Placed before session/Passport
+
+// Session middleware setup
 app.use(session({
-  secret: process.env.SESSION_SECRET || 'a_very_secret_key_for_development_only', // Use env var in production
+  secret: process.env.SESSION_SECRET || 'a_very_secret_key_for_development_only',
   resave: false,
-  saveUninitialized: false, // Set to false for only logged-in users
+  saveUninitialized: false,
   cookie: {
-    secure: process.env.NODE_ENV === 'production', // True in production (HTTPS)
-    httpOnly: true, // Helps prevent XSS
-    // maxAge: 1000 * 60 * 60 * 24 // Optional: e.g., 1 day
+    secure: process.env.NODE_ENV === 'production',
+    httpOnly: true,
   }
-  // store: new SomeStore(...) // Optional: For persistent session store in production
 }));
 
-// 3. Passport middleware setup
+// Passport middleware setup
 app.use(passport.initialize());
-app.use(passport.session()); // Important: must come after express-session
+app.use(passport.session());
 
-// 4. Define isAuthenticated middleware function
-// Middleware to check if user is authenticated
+// Define isAuthenticated middleware function
 export const isAuthenticated = (req: Request, res: Response, next: NextFunction) => {
-  if (req.isAuthenticated()) { // Provided by Passport
+  if (req.isAuthenticated()) {
     return next();
   }
   res.status(401).json({ message: 'User not authenticated. Please log in.' });
 };
 
-// 5. CORS (if any - not specified here, but would go here)
-
-// 6. Register Routes (after auth middleware)
+// Register Routes
 (async () => {
-  const server = await registerRoutes(app); // registerRoutes should be called after passport initialization
+  const server = await registerRoutes(app);
 
-  // Error handling middleware (already present)
+  // Debug: Log registered routes
+  console.log("Attempting to print registered routes...");
+  if (app._router && app._router.stack) {
+    app._router.stack.forEach((middleware: any) => {
+      if (middleware.route) {
+        console.log(`ROUTE: ${middleware.route.stack[0].method.toUpperCase()} ${middleware.route.path}`);
+      } else if (middleware.name === 'router') {
+        middleware.handle.stack.forEach((handler: any) => {
+          if (handler.route) {
+            console.log(`ROUTER ROUTE: ${handler.route.stack[0].method.toUpperCase()} ${handler.route.path}`);
+          }
+        });
+      }
+    });
+  } else {
+    console.log("Could not inspect app._router.stack to print routes.");
+  }
+
+  // Error handling middleware
   app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
     const status = err.status || err.statusCode || 500;
     const message = err.message || "Internal Server Error";
-    console.error("Error caught by global error handler:", err); // Added for better debugging
+    console.error("Error caught by global error handler:", err);
     res.status(status).json({ message });
-    // Removed `throw err;` as it can stop the server if not caught by a higher-level handler
   });
 
-  // Vite/static serving (already present)
+  // Vite/static serving
   if (app.get("env") === "development") {
     await setupVite(app, server);
   } else {

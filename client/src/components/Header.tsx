@@ -5,7 +5,8 @@ import { Button } from '@/components/ui/button'; // Step 1: Import Button
 
 export default function Header() {
   // Step 2: Use useAuth Hook
-  const { user, isLoading, logout: contextLogout } = useAuth();
+  const { user, isLoading, isAuthenticated, logout: contextLogout } = useAuth(); // Added isAuthenticated
+  console.log('[Header] Auth state from useAuth(): user:', user, 'isLoading:', isLoading, 'isAuthenticated:', isAuthenticated); // Added console.log
 
   // Step 3: Implement Logout Handler
   const handleLogout = async () => {

@@ -35,11 +35,14 @@ passport.serializeUser((user, done) => {
   done(null, (user as User).id); 
 });
 
-passport.deserializeUser(async (id, done) => {
+passport.deserializeUser(async (id: number, done) => { // Ensure 'id' is typed if possible, e.g., id: number
+  console.log('[Passport deserializeUser] Attempting to deserialize user with ID:', id); // New log
   try {
-    const user = await storage.getUser(id as number);
+    const user = await storage.getUser(id as number); // Cast id if necessary
+    console.log('[Passport deserializeUser] User fetched from storage:', user); // New log
     done(null, user || false); // If user not found, pass false or null
   } catch (err) {
+    console.error('[Passport deserializeUser] Error during deserialization:', err); // Modified log
     done(err, undefined);
   }
 });
