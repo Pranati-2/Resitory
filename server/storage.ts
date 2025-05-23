@@ -29,15 +29,15 @@ export class MemStorage implements IStorage { // Step 3: Update MemStorage class
 
   // getUserByUsername method removed
 
-  async getUserByGoogleId(googleId: string): Promise<User | undefined> { // Implemented
-    for (const user of this.users.values()) {
-      // Ensure user.googleId is accessed correctly, assuming the User type has it
-      if (user.googleId === googleId) { 
-        return user;
-      }
+  async getUserByGoogleId(googleId: string): Promise<User | undefined> {
+  for (const user of Array.from(this.users.values())) {
+    if (user.googleId === googleId) {
+      return user;
     }
-    return undefined;
   }
+  return undefined;
+}
+
 
   async findOrCreateUserByGoogleId(profile: { // Implemented
     googleId: string;
