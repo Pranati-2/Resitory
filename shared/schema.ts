@@ -3,12 +3,23 @@ import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
 // Define Resource schema
+// Define LinkedPathPreview schema (new)
+export const linkedPathPreviewSchema = z.object({
+  id: z.string(),
+  title: z.string(),
+  coverImage: z.string().optional(), // Assuming URL for coverImage if present
+  category: z.string().optional(),
+  difficulty: z.string().optional(),
+});
+
+// Define Resource schema
 export const resourceSchema = z.object({
   id: z.string(),
   type: z.enum(['video', 'website', 'pdf', 'image', 'learningPath', 'other']),
   title: z.string(),
-  url: z.string().url(),
-  description: z.string()
+  url: z.string(), // Changed from z.string().url()
+  description: z.string(),
+  linkedPathPreview: linkedPathPreviewSchema.optional(), // Added field
 });
 
 // Define LearningPath schema
