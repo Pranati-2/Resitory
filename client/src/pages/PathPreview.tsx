@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useRoute, Link } from "wouter";
-import { ArrowLeft, Star, ExternalLink, Share2 } from "lucide-react";
+import { ArrowLeft, Star, ExternalLink, Share2, Link as LinkIcon } from "lucide-react"; // Added LinkIcon
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { LearningPath, Resource } from "@/lib/types";
@@ -9,6 +9,26 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+
+// Helper functions for styling badges (similar to LearningPathCard)
+const getCategoryColorClass = (category?: string) => {
+  switch (category) {
+    case "programming": return "bg-blue-50 text-blue-600 border-blue-200";
+    case "design": return "bg-pink-50 text-pink-600 border-pink-200";
+    case "datascience": return "bg-purple-50 text-purple-600 border-purple-200";
+    case "business": return "bg-green-50 text-green-600 border-green-200";
+    default: return "bg-gray-50 text-gray-600 border-gray-200";
+  }
+};
+
+const getDifficultyColorClass = (difficulty?: string) => {
+  switch (difficulty) {
+    case "beginner": return "bg-blue-50 text-blue-600 border-blue-200";
+    case "intermediate": return "bg-yellow-50 text-yellow-600 border-yellow-200";
+    case "advanced": return "bg-red-50 text-red-600 border-red-200";
+    default: return "bg-gray-50 text-gray-600 border-gray-200";
+  }
+};
 
 export default function PathPreview() {
   const [, params] = useRoute("/path/:id");
@@ -34,7 +54,7 @@ export default function PathPreview() {
             </svg>
           </div>
         );
-      case "article":
+      case "website": // Changed "article" to "website"
         return (
           <div className="flex-shrink-0 h-10 w-10 bg-blue-100 rounded-full flex items-center justify-center">
             <svg className="h-6 w-6 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -58,7 +78,8 @@ export default function PathPreview() {
             </svg>
           </div>
         );
-      default:
+      // No case for 'learningPath' here, as it's handled differently in the map
+      default: // 'other'
         return (
           <div className="flex-shrink-0 h-10 w-10 bg-gray-100 rounded-full flex items-center justify-center">
             <svg className="h-6 w-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -116,15 +137,10 @@ export default function PathPreview() {
             <div className="lg:col-span-2">
               <div className="bg-white rounded-lg shadow-sm p-6">
                 <div className="flex flex-wrap gap-2 mb-4">
-                  <Badge variant="outline" className={`${path.category === 'programming' ? 'bg-blue-50 text-blue-600 border-blue-200' : 
-                                                          path.category === 'design' ? 'bg-pink-50 text-pink-600 border-pink-200' : 
-                                                          path.category === 'datascience' ? 'bg-purple-50 text-purple-600 border-purple-200' : 
-                                                          'bg-green-50 text-green-600 border-green-200'}`}>
+                  <Badge variant="outline" className={getCategoryColorClass(path.category)}>
                     {path.category.charAt(0).toUpperCase() + path.category.slice(1)}
                   </Badge>
-                  <Badge variant="outline" className={`${path.difficulty === 'beginner' ? 'bg-blue-50 text-blue-600 border-blue-200' : 
-                                                          path.difficulty === 'intermediate' ? 'bg-yellow-50 text-yellow-600 border-yellow-200' : 
-                                                          'bg-red-50 text-red-600 border-red-200'}`}>
+                  <Badge variant="outline" className={getDifficultyColorClass(path.difficulty)}>
                     {path.difficulty.charAt(0).toUpperCase() + path.difficulty.slice(1)}
                   </Badge>
                 </div>
@@ -164,82 +180,131 @@ export default function PathPreview() {
                   </div>
                   
                   <div className="space-y-4">
-                    {path.resources.map((resource, index) => (
-                      <Card key={resource.id}>
-                        <CardContent className="p-4">
-                          <div className="flex flex-col space-y-4">
-                            {/* Show YouTube video thumbnails */}
-                            {resource.type === 'video' && resource.url && resource.url.includes('youtube') && (
-                              <div className="w-full relative rounded-md overflow-hidden">
-                                <div className="pb-[56.25%]">
-                                  {(() => {
-                                    const videoId = resource.url.match(/(?:youtube\.com\/(?:[^\/\n\s]+\/\s*[^\/\n\s]+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
-                                    return videoId && (
-                                      <img 
-                                        src={`https://img.youtube.com/vi/${videoId[1]}/mqdefault.jpg`}
-                                        alt={resource.title || "Video thumbnail"}
-                                        className="absolute inset-0 w-full h-full object-cover"
-                                      />
-                                    );
-                                  })()}
-                                  <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-20">
-                                    <div className="w-12 h-12 rounded-full bg-white bg-opacity-80 flex items-center justify-center">
-                                      <svg className="w-6 h-6 text-red-600" fill="currentColor" viewBox="0 0 24 24">
-                                        <path d="M8 5v14l11-7z" />
-                                      </svg>
+                    {path.resources.map((resource, index) => {
+                      if (resource.type === 'learningPath' && resource.linkedPathPreview) {
+                        const preview = resource.linkedPathPreview;
+                        return (
+                          <Link key={resource.id} href={`/path/${preview.id}`} className="block no-underline">
+                            <Card className="group hover:shadow-md transition-shadow duration-200 cursor-pointer border-2 border-primary-100 hover:border-primary-300 bg-primary-50/30">
+                              <CardContent className="p-4">
+                                <div className="flex items-start gap-4">
+                                  {preview.coverImage && (
+                                    <img 
+                                      src={preview.coverImage} 
+                                      alt={`Cover for ${preview.title}`} 
+                                      className="w-20 h-20 object-cover rounded-md flex-shrink-0 border border-primary-200"
+                                    />
+                                  )}
+                                  <div className="flex-1">
+                                    <div className="flex items-center mb-1">
+                                      <LinkIcon className="h-4 w-4 text-primary-500 mr-2 flex-shrink-0" />
+                                      <h3 className="text-base font-medium text-primary-700 group-hover:text-primary-800">
+                                        {resource.title} {/* User-customized title */}
+                                      </h3>
+                                    </div>
+                                    {resource.title !== preview.title && (
+                                       <p className="text-xs text-gray-500 mb-1 italic">Original title: {preview.title}</p>
+                                    )}
+                                    <p className="text-sm text-gray-700 mb-2 line-clamp-2">{resource.description || 'View linked learning path details.'}</p>
+                                    <div className="flex flex-wrap gap-2">
+                                      {preview.category && (
+                                        <Badge variant="outline" className={`text-xs ${getCategoryColorClass(preview.category)}`}>
+                                          {preview.category.charAt(0).toUpperCase() + preview.category.slice(1)}
+                                        </Badge>
+                                      )}
+                                      {preview.difficulty && (
+                                        <Badge variant="outline" className={`text-xs ${getDifficultyColorClass(preview.difficulty)}`}>
+                                          {preview.difficulty.charAt(0).toUpperCase() + preview.difficulty.slice(1)}
+                                        </Badge>
+                                      )}
+                                    </div>
+                                  </div>
+                                </div>
+                              </CardContent>
+                            </Card>
+                          </Link>
+                        );
+                      } else {
+                        // Existing resource rendering logic
+                        return (
+                          <Card key={resource.id}>
+                            <CardContent className="p-4">
+                              <div className="flex flex-col space-y-4">
+                                {/* Show YouTube video thumbnails */}
+                                {resource.type === 'video' && resource.url && resource.url.includes('youtube') && (
+                                  <div className="w-full relative rounded-md overflow-hidden">
+                                    <div className="pb-[56.25%]"> {/* 16:9 Aspect Ratio */}
+                                      {(() => {
+                                        const videoIdMatch = resource.url.match(/(?:youtube\.com\/(?:[^\/\n\s]+\/\s*[^\/\n\s]+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
+                                        const videoId = videoIdMatch ? videoIdMatch[1] : null;
+                                        return videoId && (
+                                          <img 
+                                            src={`https://img.youtube.com/vi/${videoId}/mqdefault.jpg`}
+                                            alt={resource.title || "Video thumbnail"}
+                                            className="absolute inset-0 w-full h-full object-cover"
+                                          />
+                                        );
+                                      })()}
+                                      <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-20">
+                                        <div className="w-12 h-12 rounded-full bg-white bg-opacity-80 flex items-center justify-center">
+                                          <svg className="w-6 h-6 text-red-600" fill="currentColor" viewBox="0 0 24 24">
+                                            <path d="M8 5v14l11-7z" />
+                                          </svg>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                )}
+                                
+                                {/* Image resource preview */}
+                                {resource.type === 'image' && resource.url && (
+                                  <div className="w-full rounded-md overflow-hidden max-h-48">
+                                    <img 
+                                      src={resource.url}
+                                      alt={resource.title || "Image resource"}
+                                      className="w-full object-cover"
+                                      onError={(e) => {
+                                        (e.target as HTMLImageElement).style.display = 'none'; // Hide if image fails to load
+                                      }}
+                                    />
+                                  </div>
+                                )}
+                                
+                                <div className="flex items-start">
+                                  {getResourceIcon(resource.type)}
+                                  <div className="ml-4 flex-1">
+                                    <div className="flex items-center justify-between">
+                                      <h3 className="text-base font-medium text-gray-900">{resource.title || `Resource ${index + 1}`}</h3>
+                                      <span className="text-xs font-medium text-gray-500 capitalize">{resource.type}</span>
+                                    </div>
+                                    {resource.description && (
+                                      <p className="mt-1 text-sm text-gray-600 line-clamp-2">{resource.description}</p>
+                                    )}
+                                    <div className="mt-2">
+                                      <a
+                                        href={resource.url}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="inline-flex items-center text-sm text-primary-600 hover:text-primary-700"
+                                      >
+                                        Open Resource
+                                        <ExternalLink className="h-4 w-4 ml-1" />
+                                      </a>
                                     </div>
                                   </div>
                                 </div>
                               </div>
-                            )}
-                            
-                            {/* Image resource preview */}
-                            {resource.type === 'image' && resource.url && (
-                              <div className="w-full rounded-md overflow-hidden max-h-48">
-                                <img 
-                                  src={resource.url}
-                                  alt={resource.title || "Image resource"}
-                                  className="w-full object-cover"
-                                  onError={(e) => {
-                                    (e.target as HTMLImageElement).style.display = 'none';
-                                  }}
-                                />
-                              </div>
-                            )}
-                            
-                            <div className="flex items-start">
-                              {getResourceIcon(resource.type)}
-                              <div className="ml-4 flex-1">
-                                <div className="flex items-center justify-between">
-                                  <h3 className="text-base font-medium text-gray-900">{resource.title || `Resource ${index + 1}`}</h3>
-                                  <span className="text-xs font-medium text-gray-500 capitalize">{resource.type}</span>
-                                </div>
-                                {resource.description && (
-                                  <p className="mt-1 text-sm text-gray-600">{resource.description}</p>
-                                )}
-                                <div className="mt-2">
-                                  <a
-                                    href={resource.url}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="inline-flex items-center text-sm text-primary-600 hover:text-primary-700"
-                                  >
-                                    Open Resource
-                                    <ExternalLink className="h-4 w-4 ml-1" />
-                                  </a>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        </CardContent>
-                      </Card>
-                    ))}
+                            </CardContent>
+                          </Card>
+                        );
+                      }
+                    })}
                   </div>
                 </div>
               </div>
             </div>
             
-            {/* Right Column - Sidebar */}
+            {/* Right Column - Sidebar (remains unchanged) */}
             <div>
               <div className="bg-white rounded-lg shadow-sm p-6 sticky top-20">
                 <div className="mb-6">
@@ -265,12 +330,17 @@ export default function PathPreview() {
                 <Button 
                   className="w-full mb-3"
                   onClick={() => {
-                    // In a real app, this would mark the path as "started" for the user
-                    // and perhaps take them to the first resource
-                    if (path.resources.length > 0) {
+                    if (path.resources.length > 0 && path.resources[0].type !== 'learningPath') {
                       window.open(path.resources[0].url, '_blank');
+                    } else if (path.resources.length > 0 && path.resources[0].type === 'learningPath' && path.resources[0].linkedPathPreview) {
+                       // For a linked path, perhaps navigate to its preview page on the site
+                       // Or, if it has its own resources, the first one.
+                       // For now, let's assume we don't auto-open linked paths this way.
+                       console.log("Start Learning clicked on a linked path resource.");
                     }
                   }}
+                  // Disable if first resource is a linked path, as "Start Learning" implies external content
+                  disabled={path.resources.length > 0 && path.resources[0].type === 'learningPath'} 
                 >
                   Start Learning
                 </Button>
@@ -279,10 +349,7 @@ export default function PathPreview() {
                   variant="outline" 
                   className="w-full flex items-center justify-center mb-4"
                   onClick={() => {
-                    // Create a shareable URL
                     const shareUrl = window.location.href;
-                    
-                    // Try to use the Web Share API if available
                     if (navigator.share) {
                       navigator.share({
                         title: path.title,
@@ -290,13 +357,11 @@ export default function PathPreview() {
                         url: shareUrl,
                       }).catch(err => {
                         console.error('Error sharing:', err);
-                        // Fallback to clipboard
                         navigator.clipboard.writeText(shareUrl)
                           .then(() => alert('Link copied to clipboard!'))
                           .catch(e => console.error('Could not copy link:', e));
                       });
                     } else {
-                      // Fallback for browsers without Web Share API
                       navigator.clipboard.writeText(shareUrl)
                         .then(() => alert('Link copied to clipboard!'))
                         .catch(e => console.error('Could not copy link:', e));
