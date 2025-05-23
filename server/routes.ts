@@ -29,6 +29,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
       failureRedirect: process.env.FRONTEND_LOGIN_FAILURE_URL || '/login?error=true', // Redirect to frontend login page with error
     }),
     (req, res) => {
+      // New logs here:
+      console.log('[/auth/google/callback] Successfully authenticated by Passport.');
+      console.log('[/auth/google/callback] req.user:', req.user);
+      console.log('[/auth/google/callback] req.session:', req.session); 
+      console.log('[/auth/google/callback] req.sessionID:', req.sessionID); // Also useful
+
       // Successful authentication, redirect to frontend.
       // The session is established by Passport at this point.
       res.redirect(process.env.FRONTEND_URL || '/'); // Redirect to frontend root or a specific success page
