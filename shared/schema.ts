@@ -63,3 +63,17 @@ export const insertLearningPathSchema = createInsertSchema(learningPaths).omit({
 });
 
 export type InsertLearningPath = z.infer<typeof insertLearningPathSchema>;
+
+// Define User schema for database (if we were using one)
+export const users = pgTable("users", {
+  id: serial("id").primaryKey(),
+  googleId: text("google_id").unique(), // Can be null if we allow other auth methods later
+  email: text("email").notNull().unique(),
+  displayName: text("display_name").notNull(),
+  avatarUrl: text("avatar_url"), // Optional
+  // username: text("username").unique(), // Optional, if needed for other purposes
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export type User = typeof users.$inferSelect;
+export type InsertUser = typeof users.$inferInsert;
