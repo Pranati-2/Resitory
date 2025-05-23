@@ -33,9 +33,12 @@ async (accessToken: any, refreshToken: any, profile: { emails: string | any[]; i
 }));
 
 passport.serializeUser((user, done) => {
+  console.log('[Passport serializeUser] Serializing user:', user); // New log
   // The user object here is what you passed to `done` in the strategy
   // We need its internal ID from our database/storage
-  done(null, (user as User).id); 
+  const userId = (user as User).id; // Assuming 'User' type has 'id'
+  console.log('[Passport serializeUser] Storing user ID in session:', userId); // New log
+  done(null, userId); 
 });
 
 passport.deserializeUser(async (id: number, done) => { // Ensure 'id' is typed if possible, e.g., id: number
