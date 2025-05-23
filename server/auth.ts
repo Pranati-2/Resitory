@@ -10,21 +10,32 @@ passport.use(new GoogleStrategy({
   scope: ['profile', 'email'] // Request access to profile and email
 },
 async (accessToken, refreshToken, profile, done) => {
+  console.log('[GoogleStrategy VerifyCb] Reached verify callback.'); // New log
+  console.log('[GoogleStrategy VerifyCb] AccessToken (sample - first 10 chars):', accessToken?.substring(0, 10)); // New log - sample, don't log full token
+  // console.log('[GoogleStrategy VerifyCb] RefreshToken:', refreshToken); // Usually undefined unless offline access requested & configured
+  console.log('[GoogleStrategy VerifyCb] Profile from Google:', JSON.stringify(profile, null, 2)); // New log - Full profile
+
   try {
-    // console.log('Google Profile:', JSON.stringify(profile, null, 2)); // Useful for debugging
     const email = profile.emails && profile.emails.length > 0 ? profile.emails[0].value : undefined;
+    console.log('[GoogleStrategy VerifyCb] Extracted email:', email); // New log
+
     if (!email) {
+      console.error('[GoogleStrategy VerifyCb] No email found in Google profile.'); // New log
       return done(new Error("No email found in Google profile"), undefined);
     }
 
+    console.log('[GoogleStrategy VerifyCb] Calling storage.findOrCreateUserByGoogleId with profile ID:', profile.id); // New log
     const user = await storage.findOrCreateUserByGoogleId({
       googleId: profile.id,
       email: email,
       displayName: profile.displayName,
       avatarUrl: profile.photos && profile.photos.length > 0 ? profile.photos[0].value : undefined
     });
+    console.log('[GoogleStrategy VerifyCb] User from storage.findOrCreateUserByGoogleId:', user); // New log
+
     return done(null, user);
   } catch (err) {
+    console.error('[GoogleStrategy VerifyCb] Error in verify callback:', err); // Modified log
     return done(err, undefined);
   }
 }));
