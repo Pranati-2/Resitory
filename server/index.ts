@@ -6,6 +6,11 @@ import './auth'; // Import Passport configuration
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
 
+import 'dotenv/config';
+// or if using CommonJS:
+// require('dotenv').config();
+
+
 const app = express();
 
 // 1. Body parsers (already present)
