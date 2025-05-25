@@ -23,8 +23,16 @@ We welcome contributions to Course Corrected! If you're interested in helping im
 3.  Make your changes.
 4.  Submit a pull request with a clear description of your changes.
 
-## Run
+# Project Setup and Development
+
+## Installation
+
+To install all project dependencies and run development server, run:
+
+```bash
 npm install
-npm run dev 
+
+npm run dev
+
 
 
