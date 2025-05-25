@@ -1,38 +1,47 @@
-# Resitory 
+# 📚 Resitory
 
-**(This is an original idea.) A browsing website for organizing free online resources into learning paths.**
+> **A modern browsing platform for organizing free online resources into structured learning paths.**
 
-## The Problem
+---
 
-Learning online can be challenging. Free educational resources are often scattered across the web, making it difficult to find a clear path and stay organized. Legacy browsers and platforms often have fragmented content, leading to a frustrating and inefficient learning experience.
+## 🚧 The Problem
 
-## Features
+Learning online is often chaotic.
 
-Resitory offers a solution by providing a platform where users can:
+Educational content is scattered across YouTube, blogs, PDFs, forums, and more. With no centralized structure, learners struggle to:
 
-*   **Create Learning Paths:** Curate and organize free online resources into structured courses.
-*   **Consume Courses:** Easily follow learning paths created by others.
-*   **Share Knowledge:** Share your own curated courses with the community, helping to educate others.
+- Find a logical sequence of topics
+- Track their progress
+- Share what they’ve learned with others
 
-## Contributing
+---
 
-We welcome contributions to Course Corrected! If you're interested in helping improve the platform, please:
+## ✅ The Solution: Resitory
 
-1.  Fork the repository.
-2.  Create a new branch for your feature or bug fix.
-3.  Make your changes.
-4.  Submit a pull request with a clear description of your changes.
+**Resitory** offers a streamlined interface for discovering, organizing, and sharing learning content from across the web — all in one place.
 
-# Project Setup and Development
+### 🔑 Key Features
 
-## Installation
+- 📘 **Create Learning Paths**  
+  Curate free online resources (videos, articles, PDFs, etc.) into structured, step-by-step courses.
 
-To install all project dependencies and run development server, run:
+- 🧠 **Consume Courses**  
+  Browse and follow learning paths created by the community.
+
+- 🌍 **Share Knowledge**  
+  Publish your own curated learning tracks and help others learn effectively.
+
+---
+
+## 🛠 Project Setup & Development
+
+### 📦 Installation
+
+To set up the development environment locally:
 
 ```bash
+# Install all dependencies
 npm install
 
+# Start the development server
 npm run dev
-
-
-
