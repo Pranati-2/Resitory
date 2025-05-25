@@ -1,6 +1,6 @@
-# Course Corrected
+# Resitory 
 
-**A browsing website for organizing free online resources into learning paths.**
+**(This is an original idea.) A browsing website for organizing free online resources into learning paths.**
 
 ## The Problem
 
@@ -8,7 +8,7 @@ Learning online can be challenging. Free educational resources are often scatter
 
 ## Features
 
-Course Corrected offers a solution by providing a platform where users can:
+Resitory offers a solution by providing a platform where users can:
 
 *   **Create Learning Paths:** Curate and organize free online resources into structured courses.
 *   **Consume Courses:** Easily follow learning paths created by others.
@@ -23,6 +23,8 @@ We welcome contributions to Course Corrected! If you're interested in helping im
 3.  Make your changes.
 4.  Submit a pull request with a clear description of your changes.
 
-## License
+## Run
+npm install
+npm run dev 
 
-This project is licensed under the [NAME OF LICENSE] - see the LICENSE.md file for details (if available).
+
